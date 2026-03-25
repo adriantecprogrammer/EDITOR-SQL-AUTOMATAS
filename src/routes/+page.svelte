@@ -55,6 +55,13 @@
 			>
 				Exportar
 			</button>
+			<button
+				onclick={exportToTxt}
+				disabled={!outputText}
+				class="rounded-lg border border-gray-200 bg-white px-5 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+			>
+				Compartir
+			</button>
 		</div>
 	</header>
 
