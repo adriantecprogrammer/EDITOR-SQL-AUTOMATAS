@@ -23,7 +23,7 @@
 	}
 </script>
 
-<div class="relative flex min-h-screen flex-col bg-gray-700 text-gray-800">
+<div class="relative flex min-h-screen flex-col bg-gray-50 text-gray-800">
 	<!-- Background glow effects -->
 	<div class="pointer-events-none absolute inset-0 overflow-hidden">
 		<div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-cyan-400/15 blur-3xl"></div>
