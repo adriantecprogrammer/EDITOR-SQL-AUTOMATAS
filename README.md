@@ -44,3 +44,29 @@ You can preview the production build with `npm run preview`.
 docker compose up -d
 
 docker compose down
+
+
+
+
+vamos a crear MiEscuela
+comenzar a usar MiEscuela
+
+vamos a guardar información sobre estudiantes
+    vamos a recordar nombre que es texto
+    vamos a recordar edad que es número
+    vamos a recordar fecha_nacimiento que es fecha
+    es amiga de clases
+terminamos esta tabla
+
+vamos a guardar información sobre clases
+    vamos a recordar nombre_clase que es texto
+    vamos a recordar salon que es texto
+    es amiga de profesores
+terminamos esta tabla
+
+vamos a guardar información sobre profesores
+    vamos a recordar nombre que es texto
+    vamos a recordar especialidad que es texto
+terminamos esta tabla
+
+mostrar lo aprendido

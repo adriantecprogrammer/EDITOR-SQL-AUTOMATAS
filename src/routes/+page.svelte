@@ -6,9 +6,20 @@
 	async function createSql() {
 		try {
 			const response = await sqlApi.createSql(inputText);
-			outputText = response.data;
+			console.log('Response received in UI:', response);
+			outputText = response;
 		} catch (error) {
-			console.error(error);
+			console.error('Error in UI:', error);
+		}
+	}
+
+	async function createBD() {
+		try {
+			const response = await sqlApi.createBD(inputText);
+			console.log('Response received in UI:', response);
+			outputText = response;
+		} catch (error) {
+			console.error('Error in UI:', error);
 		}
 	}
 
@@ -27,13 +38,19 @@
 	<!-- Background glow effects -->
 	<div class="pointer-events-none absolute inset-0 overflow-hidden">
 		<div class="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-cyan-400/15 blur-3xl"></div>
-		<div class="absolute -right-40 -bottom-40 h-96 w-96 rounded-full bg-violet-400/15 blur-3xl"></div>
+		<div
+			class="absolute -right-40 -bottom-40 h-96 w-96 rounded-full bg-violet-400/15 blur-3xl"
+		></div>
 	</div>
 
 	<!-- Header -->
-	<header class="relative z-10 flex items-center justify-between border-b border-gray-200/80 bg-white/70 px-6 py-4 backdrop-blur-sm">
+	<header
+		class="relative z-10 flex items-center justify-between border-b border-gray-200/80 bg-white/70 px-6 py-4 backdrop-blur-sm"
+	>
 		<div class="flex items-center gap-3">
-			<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-cyan-400 to-violet-500 shadow-md shadow-cyan-500/20">
+			<div
+				class="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-cyan-400 to-violet-500 shadow-md shadow-cyan-500/20"
+			>
 				<span class="text-sm font-bold text-white">&gt;_</span>
 			</div>
 			<div>
@@ -56,11 +73,11 @@
 				Exportar
 			</button>
 			<button
-				onclick={exportToTxt}
+				onclick={createBD}
 				disabled={!outputText}
-				class="rounded-lg border border-gray-200 bg-white px-5 py-2 text-sm font-medium text-gray-600 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+				class="rounded-lg border border-gray-200 bg-linear-to-r from-cyan-500 to-blue-500 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
 			>
-				Compartir
+				Crear BD
 			</button>
 		</div>
 	</header>
@@ -68,7 +85,9 @@
 	<!-- Main content -->
 	<main class="relative z-10 flex flex-1 gap-4 p-4">
 		<!-- Input panel -->
-		<div class="flex flex-1 flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur-sm">
+		<div
+			class="flex flex-1 flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur-sm"
+		>
 			<div class="flex items-center gap-2 border-b border-gray-100 px-4 py-2.5">
 				<div class="h-2 w-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400/50"></div>
 				<span class="text-xs font-semibold tracking-widest text-gray-400 uppercase">Entrada</span>
@@ -77,7 +96,7 @@
 				bind:value={inputText}
 				placeholder="Escribe aqui..."
 				spellcheck="false"
-				class="flex-1 resize-none bg-transparent px-4 py-3 font-mono text-sm text-gray-800 caret-cyan-500 placeholder-gray-300 outline-none"
+				class="flex-1 resize-none bg-transparent px-4 py-3 font-mono text-sm text-gray-800 placeholder-gray-300 caret-cyan-500 outline-none"
 			></textarea>
 		</div>
 
@@ -87,7 +106,9 @@
 		</div>
 
 		<!-- Output panel -->
-		<div class="flex flex-1 flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur-sm">
+		<div
+			class="flex flex-1 flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur-sm"
+		>
 			<div class="flex items-center gap-2 border-b border-gray-100 px-4 py-2.5">
 				<div class="h-2 w-2 rounded-full bg-violet-400 shadow-sm shadow-violet-400/50"></div>
 				<span class="text-xs font-semibold tracking-widest text-gray-400 uppercase">Salida</span>
