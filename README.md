@@ -70,3 +70,18 @@ vamos a guardar información sobre profesores
 terminamos esta tabla
 
 mostrar lo aprendido
+
+
+
+//////////////////////////////////////////7
+
+
+vamos a crear MiEscuela
+comenzar a usar MiEscuela
+
+vamos a guardar información sobre estudiantes
+    vamos a recordar nombre que es texto
+    vamos a recordar edad que es número
+terminamos esta tabla
+
+mostrar lo aprendido
