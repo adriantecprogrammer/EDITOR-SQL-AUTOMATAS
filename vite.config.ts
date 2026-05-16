@@ -7,9 +7,9 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://192.168.1.102:8080',
+				target: 'http://localhost:8080',
 				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, '/GENERADOR_SQL_BACKEND_war_exploded/webapi/myresource')
+				rewrite: (path) => path.replace(/^\/api/, '/GENERADOR-SQL-BACKEND/webapi/myresource')
 			}
 		}
 	}
