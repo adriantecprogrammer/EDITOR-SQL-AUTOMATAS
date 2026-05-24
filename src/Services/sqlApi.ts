@@ -31,9 +31,11 @@ export const sqlApi = {
 			throw error;
 		}
 	},
-	async createCRUD(sql: string) {
+	async createCRUD(sql: string, tabla?: string) {
 		try {
+			const params = tabla ? { tabla } : {};
 			const response = await axiosInstance.post('/generarCRUD', sql, {
+				params,
 				headers: {
 					'Content-Type': 'text/plain'
 				}

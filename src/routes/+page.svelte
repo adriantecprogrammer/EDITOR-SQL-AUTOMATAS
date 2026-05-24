@@ -1,36 +1,26 @@
 <script lang="ts">
 	import { sqlApi } from '../Services/sqlApi';
 	import type { IGeneradorSQL } from '../Interfaces/IGeneradorSQL';
+	import ERDiagram from '../lib/ERDiagram.svelte';
 
 	let inputText = $state('');
 	let outputText = $state('');
 	let generado = $state<IGeneradorSQL | null>(null);
-	let view = $state<'visual' | 'sql'>('visual');
+	let view = $state<'visual' | 'sql' | 'er'>('visual');
 	let copiedKey = $state<string | null>(null);
 	let loading = $state<null | 'sql' | 'bd' | 'crud'>(null);
 	let errorMsg = $state('');
 	let inputEl: HTMLTextAreaElement | null = $state(null);
 	let gutterEl: HTMLDivElement | null = $state(null);
+	let inputVisible = $state(true);
 
-	const EJEMPLO = `vamos a crear MiEscuela
-comenzar a usar MiEscuela
 
-vamos a guardar información sobre estudiantes
-    vamos a recordar nombre que es texto
-    vamos a recordar edad que es número
-    vamos a recordar fecha_nacimiento que es fecha
-    es amiga de clases
-terminamos esta tabla
+	const EJEMPLO = `vamos a crear Tienda
+comenzar a usar Tienda
 
-vamos a guardar información sobre clases
-    vamos a recordar nombre_clase que es texto
-    vamos a recordar salon que es texto
-    es amiga de profesores
-terminamos esta tabla
-
-vamos a guardar información sobre profesores
-    vamos a recordar nombre que es texto
-    vamos a recordar especialidad que es texto
+vamos a guardar información sobre Productos
+    vamos a recordar nombre_producto que es texto
+    vamos a recordar cantidad que es número
 terminamos esta tabla
 
 mostrar lo aprendido`;
@@ -113,11 +103,11 @@ mostrar lo aprendido`;
 		}
 	}
 
-	async function generarCRUD() {
+	async function generarCRUD(tabla?: string) {
 		errorMsg = '';
 		loading = 'crud';
 		try {
-			const response = await sqlApi.createCRUD(inputText);
+			const response = await sqlApi.createCRUD(inputText, tabla);
 			outputText = typeof response === 'string' ? response : JSON.stringify(response, null, 2);
 			generado = null;
 			view = 'sql';
@@ -178,7 +168,7 @@ mostrar lo aprendido`;
 				{loading === 'sql' ? 'Generando...' : 'Crear SQL'}
 			</button>
 			<button
-				onclick={generarCRUD}
+				onclick={() => generarCRUD()}
 				disabled={!inputText || loading !== null}
 				class="rounded-lg bg-linear-to-r from-violet-500 to-purple-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-violet-500/40 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
 			>
@@ -198,11 +188,23 @@ mostrar lo aprendido`;
 			>
 				{loading === 'bd' ? 'Creando...' : 'Crear BD'}
 			</button>
+			<button
+				onclick={() => (inputVisible = !inputVisible)}
+				class="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-500 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50 active:scale-95"
+				aria-label={inputVisible ? 'Ocultar entrada' : 'Mostrar entrada'}
+			>
+				{#if inputVisible}
+					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.72 3.97a.75.75 0 011.06 0l8.25 8.25a.75.75 0 010 1.06l-8.25 8.25a.75.75 0 01-1.06-1.06L12.19 12 4.72 4.53a.75.75 0 010-1.06z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M4.72 16.03a.75.75 0 010-1.06l8.25-8.25a.75.75 0 011.06 1.06L5.81 16.03a.75.75 0 01-1.06 0z" clip-rule="evenodd"/></svg>
+				{:else}
+					<svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.28 3.97a.75.75 0 010 1.06L7.81 12l7.47 7.47a.75.75 0 01-1.06 1.06l-8.25-8.25a.75.75 0 010-1.06l8.25-8.25a.75.75 0 011.06 0z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M15.28 16.03a.75.75 0 01-1.06 0l-8.25-8.25a.75.75 0 010-1.06l8.25-8.25a.75.75 0 011.06 1.06L7.81 12l7.47 7.47a.75.75 0 010 1.06z" clip-rule="evenodd"/></svg>
+				{/if}
+			</button>
 		</div>
 	</header>
 
 	<!-- Main content -->
 	<main class="relative z-10 flex flex-1 gap-4 p-4">
+		{#if inputVisible}
 		<!-- Input panel -->
 		<div
 			class="flex flex-1 flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white/80 shadow-sm backdrop-blur-sm"
@@ -259,6 +261,7 @@ mostrar lo aprendido`;
 		<div class="flex items-center">
 			<div class="h-16 w-px bg-linear-to-b from-transparent via-cyan-400/40 to-transparent"></div>
 		</div>
+		{/if}
 
 		<!-- Output panel -->
 		<div
@@ -290,6 +293,15 @@ mostrar lo aprendido`;
 									: 'text-gray-500 hover:text-gray-700'}"
 							>
 								SQL
+							</button>
+							<button
+								type="button"
+								onclick={() => (view = 'er')}
+								class="rounded px-2.5 py-1 font-medium transition-colors {view === 'er'
+									? 'bg-gray-100 text-gray-900'
+									: 'text-gray-500 hover:text-gray-700'}"
+							>
+								ER
 							</button>
 						</div>
 					{/if}
@@ -388,6 +400,13 @@ mostrar lo aprendido`;
 										>
 											{tabla.atributos?.length ?? 0} cols
 										</span>
+									<button
+										onclick={(e) => { e.stopPropagation(); generarCRUD(tabla.nombre); }}
+										disabled={!inputText || loading !== null}
+										class="ml-auto shrink-0 rounded-md bg-violet-50 px-2.5 py-1 text-[10px] font-semibold text-violet-600 ring-1 ring-violet-200 transition-all hover:bg-violet-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+									>
+										CRUD
+									</button>
 									</div>
 								</summary>
 
@@ -434,6 +453,8 @@ mostrar lo aprendido`;
 							</details>
 						{/each}
 					</div>
+				{:else if generado && view === 'er'}
+					<ERDiagram tablas={generado.tablas} />
 				{:else if outputText}
 					<pre
 						class="h-full w-full overflow-auto px-4 py-3 font-mono text-sm whitespace-pre-wrap text-gray-700">{outputText}</pre>
