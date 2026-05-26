@@ -8,7 +8,8 @@
 	let generado = $state<IGeneradorSQL | null>(null);
 	let view = $state<'visual' | 'sql' | 'er'>('visual');
 	let copiedKey = $state<string | null>(null);
-	let loading = $state<null | 'sql' | 'bd' | 'crud'>(null);
+	let loading = $state<null | 'sql' | 'bd' | 'crud' | 'html'>(null);
+	let lastOutputType = $state<'sql' | 'html'>('sql');
 	let errorMsg = $state('');
 	let inputEl: HTMLTextAreaElement | null = $state(null);
 	let gutterEl: HTMLDivElement | null = $state(null);
@@ -110,10 +111,28 @@ mostrar lo aprendido`;
 			const response = await sqlApi.createCRUD(inputText, tabla);
 			outputText = typeof response === 'string' ? response : JSON.stringify(response, null, 2);
 			generado = null;
+			lastOutputType = 'sql';
 			view = 'sql';
 		} catch (error) {
 			console.error('Error in UI:', error);
-			errorMsg = 'No se pudo generar el CRUD.';
+			errorMsg = 'No se pudo generar el CRUD.'
+		} finally {
+			loading = null;
+		}
+	}
+
+	async function generarHTML(tabla?: string) {
+		errorMsg = '';
+		loading = 'html';
+		try {
+			const response = await sqlApi.generarHTML(inputText, tabla);
+			outputText = typeof response === 'string' ? response : JSON.stringify(response, null, 2);
+			generado = null;
+			lastOutputType = 'html';
+			view = 'sql';
+		} catch (error) {
+			console.error('Error in UI:', error);
+			errorMsg = 'No se pudo generar el HTML.'
 		} finally {
 			loading = null;
 		}
@@ -121,11 +140,12 @@ mostrar lo aprendido`;
 
 	function exportToTxt() {
 		if (!outputText) return;
-		const blob = new Blob([outputText], { type: 'text/plain' });
+		const blob = new Blob([outputText], { type: lastOutputType === 'html' ? 'text/html' : 'text/plain' });
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
-		a.download = (generado?.database ?? 'salida') + '.sql';
+		const ext = lastOutputType === 'html' ? '.html' : '.sql';
+		a.download = (generado?.database ?? 'salida') + ext;
 		a.click();
 		URL.revokeObjectURL(url);
 	}
@@ -173,6 +193,13 @@ mostrar lo aprendido`;
 				class="rounded-lg bg-linear-to-r from-violet-500 to-purple-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all hover:shadow-violet-500/40 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{loading === 'crud' ? 'Generando...' : 'Generar CRUD'}
+			</button>
+			<button
+				onclick={() => generarHTML()}
+				disabled={!inputText || loading !== null}
+				class="rounded-lg bg-linear-to-r from-emerald-500 to-teal-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40 hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+			>
+				{loading === 'html' ? 'Generando...' : 'HTML CRUD'}
 			</button>
 			<button
 				onclick={exportToTxt}
@@ -400,13 +427,22 @@ mostrar lo aprendido`;
 										>
 											{tabla.atributos?.length ?? 0} cols
 										</span>
-									<button
-										onclick={(e) => { e.stopPropagation(); generarCRUD(tabla.nombre); }}
-										disabled={!inputText || loading !== null}
-										class="ml-auto shrink-0 rounded-md bg-violet-50 px-2.5 py-1 text-[10px] font-semibold text-violet-600 ring-1 ring-violet-200 transition-all hover:bg-violet-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
-									>
-										CRUD
-									</button>
+									<div class="ml-auto flex shrink-0 items-center gap-1.5">
+										<button
+											onclick={(e) => { e.stopPropagation(); generarCRUD(tabla.nombre); }}
+											disabled={!inputText || loading !== null}
+											class="rounded-md bg-violet-50 px-2.5 py-1 text-[10px] font-semibold text-violet-600 ring-1 ring-violet-200 transition-all hover:bg-violet-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+										>
+											CRUD
+										</button>
+										<button
+											onclick={(e) => { e.stopPropagation(); generarHTML(tabla.nombre); }}
+											disabled={!inputText || loading !== null}
+											class="rounded-md bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-600 ring-1 ring-emerald-200 transition-all hover:bg-emerald-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-30"
+										>
+											HTML
+										</button>
+									</div>
 									</div>
 								</summary>
 

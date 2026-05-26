@@ -46,5 +46,21 @@ export const sqlApi = {
 			console.error('API Error details:', error);
 			throw error;
 		}
+	},
+	async generarHTML(sql: string, tabla?: string) {
+		try {
+			const params = tabla ? { tabla } : {};
+			const response = await axiosInstance.post('/generarHTML', sql, {
+				params,
+				headers: {
+					'Content-Type': 'text/plain'
+				}
+			});
+			console.log('Response body:', response.data);
+			return response.data;
+		} catch (error) {
+			console.error('API Error details:', error);
+			throw error;
+		}
 	}
 };
